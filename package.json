@@ -20,7 +20,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/auto-dot-dev/n8n-nodes-autodev.git"
+		"url": "git+https://github.com/auto-dot-dev/n8n-nodes-autodev.git"
 	},
 	"scripts": {
 		"build": "n8n-node build",
