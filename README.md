@@ -1,47 +1,46 @@
-# n8n-nodes-autodev
+# n8n-nodes-autodev: the Auto.dev node for n8n
 
-This is an n8n community node. It lets you use [Auto.dev](https://www.auto.dev) in your n8n workflows.
+The official [Auto.dev](https://www.auto.dev) community node for [n8n](https://n8n.io/). It adds vehicle data to your workflows: decode a VIN, search new and used car listings from US dealers, check safety recalls, turn a license plate into a VIN, and calculate loan payments, taxes and cost of ownership.
 
-Auto.dev is a vehicle data API: decode a VIN, search new and used dealer listings across the United States, check recalls, look up a license plate, and calculate payments, taxes and cost of ownership.
+It has 13 operations, a trigger that starts a workflow when a new listing matches your search, and it works as a tool for n8n's AI Agent node.
 
-[n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
-
-[Installation](#installation)
-[Operations](#operations)
-[Credentials](#credentials)
-[Compatibility](#compatibility)
-[Usage](#usage)
+[Installation](#installation) ·
+[Operations](#operations) ·
+[Credentials](#credentials) ·
+[Compatibility](#compatibility) ·
+[Usage](#usage) ·
+[Questions](#questions) ·
 [Resources](#resources)
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation. The package name is `n8n-nodes-autodev`.
 
+In n8n: **Settings**, then **Community Nodes**, then **Install**, and enter `n8n-nodes-autodev`.
+
 ## Operations
 
 ### Auto.dev
 
-| Resource | Operation | What it returns |
-| --- | --- | --- |
-| VIN | Decode | Year, make, model, trim, engine, drive, transmission and fuel for a VIN |
-| VIN | Get Specifications | Engine, measurements, features, colors and options |
-| VIN | Get Recalls | Every safety recall issued for the vehicle |
-| VIN | Get Open Recalls | Only the recalls that have not been repaired |
-| VIN | Get Build Data | The factory build: exact trim, colors, options and packages |
-| Listing | Get Many | New and used dealer listings that match your filters |
-| Listing | Get | The dealer listing for one VIN |
-| Listing | Get Photos | The retail photos of a vehicle |
-| Plate | Get VIN | The VIN, year, make and model behind a US license plate |
-| Finance | Get Payments | Monthly payment, loan amount, taxes and fees |
-| Finance | Get Interest Rates | Used-auto loan rates for 36 to 84 month terms |
-| Finance | Get Taxes and Fees | Sales tax and government fees for a sale in a ZIP code |
-| Finance | Get Ownership Cost | Five-year cost to own |
+| Resource | Operation | What it returns | API docs |
+| --- | --- | --- | --- |
+| VIN | Decode | Year, make, model, trim, engine, drive, transmission and fuel for a VIN | [VIN Decode](https://docs.auto.dev/v2/products/vin-decode) |
+| VIN | Get Specifications | Engine, measurements, features, colors and options | [Specifications](https://docs.auto.dev/v2/products/specifications) |
+| VIN | Get Recalls | Every safety recall issued for the vehicle | [Vehicle Recalls](https://docs.auto.dev/v2/products/vehicle-recalls) |
+| VIN | Get Open Recalls | Only the recalls that have not been repaired | [Open Recalls](https://docs.auto.dev/v2/products/open-recalls) |
+| VIN | Get Build Data | The factory build: exact trim, colors, options and packages | [OEM Build Data](https://docs.auto.dev/v2/products/oem-build-data) |
+| Listing | Get Many | New and used dealer listings that match your filters | [Vehicle Listings](https://docs.auto.dev/v2/products/vehicle-listings) |
+| Listing | Get | The dealer listing for one VIN | [Vehicle Listings](https://docs.auto.dev/v2/products/vehicle-listings) |
+| Listing | Get Photos | The retail photos of a vehicle | [Vehicle Photos](https://docs.auto.dev/v2/products/vehicle-photos) |
+| Plate | Get VIN | The VIN, year, make and model behind a US license plate | [Plate to VIN](https://docs.auto.dev/v2/products/plate-to-vin) |
+| Finance | Get Payments | Monthly payment, loan amount, taxes and fees | [Vehicle Payments](https://docs.auto.dev/v2/products/vehicle-payments) |
+| Finance | Get Interest Rates | Used-auto loan rates for 36 to 84 month terms | [Interest Rates](https://docs.auto.dev/v2/products/interest-rates) |
+| Finance | Get Taxes and Fees | Sales tax and government fees for a sale in a ZIP code | [Taxes and Fees](https://docs.auto.dev/v2/products/taxes-fees) |
+| Finance | Get Ownership Cost | Five-year cost to own | [Total Cost of Ownership](https://docs.auto.dev/v2/products/total-cost-ownership) |
 
 **Listing filters:** make, model, year, trim, body style, fuel, transmission, price, mileage, condition (new or used), certified pre-owned, state, ZIP code with distance, and dealer ID. Text filters take several values separated by commas (`Ford,Chevrolet`). Year, price and mileage take a range (`2018-2020`, `10000-20000`).
 
 **Simplify:** Decode, Listing Get and Listing Get Many return ten fields by default. Turn off **Simplify** to get the full response.
-
-The node can be used as a tool by n8n's AI Agent node.
 
 ### Auto.dev Trigger
 
@@ -67,7 +66,7 @@ Which operations you can call depends on your Auto.dev plan. See [pricing](https
 
 ## Compatibility
 
-Requires n8n 2.46.1 or later.
+Requires n8n 2.46.1 or later. Tested with n8n 2.47.
 
 ## Usage
 
@@ -93,12 +92,43 @@ Requires n8n 2.46.1 or later.
 
 Connect the **Auto.dev** node to an **AI Agent** node as a tool. The agent can then decode a VIN, search listings or check recalls while it answers.
 
+## Questions
+
+### How do I decode a VIN in n8n?
+
+Install `n8n-nodes-autodev`, add the **Auto.dev** node, choose Resource **VIN** and Operation **Decode**, and enter a 17-character VIN. The node returns the year, make, model, trim, body, engine, drive, transmission and fuel.
+
+### Is there an n8n node for car listings?
+
+Yes. The Auto.dev node's **Listing: Get Many** operation searches new and used vehicle listings from dealers across the United States, with filters for make, model, year, price, mileage, location and dealer.
+
+### How do I get an alert in n8n when a car is listed for sale?
+
+Use the **Auto.dev Trigger** node with the **New Listing** event. Add filters for the car you want, then connect Slack, email or any other node. The workflow runs once for each listing that appears after you activate it.
+
+### Can an n8n AI agent look up vehicle data?
+
+Yes. Connect the Auto.dev node to n8n's **AI Agent** node as a tool. Outside n8n, AI assistants and coding agents can connect to Auto.dev's hosted MCP server at `https://mcp.auto.dev/mcp` ([MCP quickstart](https://docs.auto.dev/v2/mcp-quickstart)).
+
+### How do I check a vehicle for recalls in n8n?
+
+Choose Resource **VIN** and Operation **Get Open Recalls** for the recalls that have not been repaired, or **Get Recalls** for every recall issued for the vehicle.
+
+### How do I convert a license plate to a VIN in n8n?
+
+Choose Resource **Plate** and Operation **Get VIN**, then enter the two-letter state and the plate number.
+
+### What does it cost?
+
+The node is open source under the MIT license. Calls are billed by Auto.dev to the account that owns the API key, at that account's plan rates. See [Auto.dev pricing](https://www.auto.dev/pricing).
+
 ## Resources
 
-- [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-- [Auto.dev API documentation](https://docs.auto.dev)
+- [Auto.dev](https://www.auto.dev)
+- [Auto.dev API documentation](https://docs.auto.dev) and [getting started guide](https://docs.auto.dev/v2/getting-started)
 - [Auto.dev OpenAPI file](https://docs.auto.dev/openapi.json)
 - [Auto.dev pricing](https://www.auto.dev/pricing)
+- [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
 
 ## License
 

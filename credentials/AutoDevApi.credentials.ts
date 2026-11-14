@@ -13,7 +13,7 @@ export class AutoDevApi implements ICredentialType {
 
 	icon: Icon = { light: 'file:../icons/autodev.svg', dark: 'file:../icons/autodev.dark.svg' };
 
-	documentationUrl = 'https://docs.auto.dev/v2/authentication';
+	documentationUrl = 'https://docs.auto.dev/v2/getting-started';
 
 	properties: INodeProperties[] = [
 		{
