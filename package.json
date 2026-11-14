@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-autodev",
-	"version": "0.1.0",
+	"version": "0.0.1",
 	"description": "n8n community node for the Auto.dev vehicle data API: VIN decode, dealer listings, recalls, specifications, plate lookup and payments",
 	"license": "MIT",
 	"homepage": "https://www.auto.dev",
