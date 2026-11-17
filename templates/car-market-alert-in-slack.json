@@ -1,0 +1,275 @@
+{
+  "name": "Get a market alert in Slack when the car you want is listed with Auto.dev",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Get a market alert when the car you want is listed\n\n### How it works\nFor anyone planning a car purchase who wants to watch the market for one specific vehicle: a make and model in a year, price and mileage range, near a ZIP code. The trigger checks Auto.dev for dealer listings that match and passes on only the ones that are new since the last check. The workflow then looks up the similar listings on the market right now, averages their prices, and posts each new listing to Slack with how far above or below that average it is.\n\nThe first check only records what is already listed, so alerts start with cars listed after you activate the workflow. The average uses up to 20 similar listings, the most one request returns on the Free plan. On Growth or Scale, raise **Limit** in that node.\n\n### Setup\n1. This template uses the community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It needs a self-hosted n8n until the node is verified. Install it from **Settings > Community Nodes** ([guide](https://docs.n8n.io/integrations/community-nodes/installation/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Every call here is on the Free plan: one request per check, and one more when something new is found.\n3. In **Watch for new listings**, set make, model, year range, price range, mileage range, ZIP code and distance, and how often to check. **Get similar listings on the market** reads the same search, so if you add or remove a filter, do it in both nodes.\n4. In **Send alert to Slack**, add your Slack credential and pick a channel.\n\n### Customization\nAdd trim, body style or fuel filters. Add an If node to alert only below the average. Swap Slack for email or Telegram.",
+        "height": 680,
+        "width": 520
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        -160
+      ],
+      "id": "74cc096a-ceab-4213-b097-082897145455",
+      "name": "Overview"
+    },
+    {
+      "parameters": {
+        "content": "## Watch the market\nChecks Auto.dev for your exact search. Only listings not seen before continue.",
+        "height": 130,
+        "width": 300,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -160
+      ],
+      "id": "0c3c6891-1d05-4cee-ba52-c7ed8b42d9e9",
+      "name": "Note search"
+    },
+    {
+      "parameters": {
+        "content": "## Compare with the market\nGets similar listings once per check and adds their average price to each new listing.",
+        "height": 130,
+        "width": 680,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -160
+      ],
+      "id": "37b72b09-d054-4818-b34e-b5c67274c231",
+      "name": "Note market"
+    },
+    {
+      "parameters": {
+        "content": "## Send the alert\nPosts the car, its price and the difference from the market average.",
+        "height": 130,
+        "width": 460,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        880,
+        -160
+      ],
+      "id": "402e5774-6d00-4a22-893c-1b93fc4c1056",
+      "name": "Note alert"
+    },
+    {
+      "parameters": {
+        "event": "newListing",
+        "filters": {
+          "make": "Toyota",
+          "model": "Tacoma",
+          "year": "2019-2023",
+          "price": "20000-35000",
+          "miles": "0-80000",
+          "zip": "33132",
+          "distance": 100
+        },
+        "limit": 20,
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-autodev.autoDevTrigger",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        40
+      ],
+      "id": "f65996bb-55c0-430a-9cbc-54229cff31ea",
+      "name": "Watch for new listings"
+    },
+    {
+      "parameters": {
+        "resource": "listing",
+        "operation": "getAll",
+        "limit": 20,
+        "filters": {
+          "make": "={{ $('Watch for new listings').params.filters.make }}",
+          "model": "={{ $('Watch for new listings').params.filters.model }}",
+          "year": "={{ $('Watch for new listings').params.filters.year }}",
+          "price": "={{ $('Watch for new listings').params.filters.price }}",
+          "miles": "={{ $('Watch for new listings').params.filters.miles }}",
+          "zip": "={{ $('Watch for new listings').params.filters.zip }}",
+          "distance": "={{ $('Watch for new listings').params.filters.distance }}"
+        },
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-autodev.autoDev",
+      "typeVersion": 1,
+      "position": [
+        220,
+        160
+      ],
+      "id": "0367af8a-37b2-4ea9-9e65-fa2c2ff9ff8c",
+      "name": "Get similar listings on the market",
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "fieldsToSummarize": {
+          "values": [
+            {
+              "aggregation": "average",
+              "field": "price"
+            },
+            {
+              "aggregation": "count",
+              "field": "vin"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.summarize",
+      "typeVersion": 1,
+      "position": [
+        440,
+        160
+      ],
+      "id": "824529f3-05e2-4940-a247-bdd58f3b1160",
+      "name": "Calculate the market average"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        680,
+        40
+      ],
+      "id": "8b986ca4-d6b2-4190-8133-659f901a3069",
+      "name": "Add the market average to each listing"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1079ec31-f8b5-43a6-b574-383bef28d8f9",
+              "name": "message",
+              "value": "=New listing: {{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }} {{ $json.vehicle.trim }}\nPrice: ${{ $json.retailListing.price }} | Mileage: {{ $json.retailListing.miles }}\nMarket: ${{ Math.abs(Math.round($json.average_price - $json.retailListing.price)) }} {{ $json.retailListing.price <= $json.average_price ? 'below' : 'above' }} the average of {{ $json.count_vin }} similar listings (${{ Math.round($json.average_price) }})\nDealer: {{ $json.retailListing.dealer }}, {{ $json.retailListing.state }}\nVIN: {{ $json.vin }}\n{{ $json.retailListing.vdp }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        40
+      ],
+      "id": "31e8bb0b-bcff-4137-b5e6-4fe639c79b83",
+      "name": "Build the alert message"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list",
+          "cachedResultName": ""
+        },
+        "text": "={{ $json.message }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        1180,
+        40
+      ],
+      "id": "fb43c0b6-4a95-49a4-9593-60d71325a29d",
+      "name": "Send alert to Slack"
+    }
+  ],
+  "connections": {
+    "Watch for new listings": {
+      "main": [
+        [
+          {
+            "node": "Add the market average to each listing",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get similar listings on the market",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get similar listings on the market": {
+      "main": [
+        [
+          {
+            "node": "Calculate the market average",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate the market average": {
+      "main": [
+        [
+          {
+            "node": "Add the market average to each listing",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Add the market average to each listing": {
+      "main": [
+        [
+          {
+            "node": "Build the alert message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the alert message": {
+      "main": [
+        [
+          {
+            "node": "Send alert to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}
