@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Get a market alert when the car you want is listed\n\n### How it works\nFor anyone planning a car purchase who wants to watch the market for one specific vehicle: a make and model in a year, price and mileage range, near a ZIP code. The trigger checks Auto.dev for dealer listings that match and passes on only the ones that are new since the last check. The workflow then looks up the similar listings on the market right now, averages their prices, and posts each new listing to Slack with how far above or below that average it is.\n\nThe first check only records what is already listed, so alerts start with cars listed after you activate the workflow. The average uses up to 20 similar listings, the most one request returns on the Free plan. On Growth or Scale, raise **Limit** in that node.\n\n### Setup\n1. This template uses the community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It needs a self-hosted n8n until the node is verified. Install it from **Settings > Community Nodes** ([guide](https://docs.n8n.io/integrations/community-nodes/installation/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Every call here is on the Free plan: one request per check, and one more when something new is found.\n3. In **Watch for new listings**, set make, model, year range, price range, mileage range, ZIP code and distance, and how often to check. **Get similar listings on the market** reads the same search, so if you add or remove a filter, do it in both nodes.\n4. In **Send alert to Slack**, add your Slack credential and pick a channel.\n\n### Customization\nAdd trim, body style or fuel filters. Add an If node to alert only below the average. Swap Slack for email or Telegram.",
+        "content": "## Get a market alert when the car you want is listed\n\n### How it works\nFor anyone planning a car purchase who wants to watch the market for one specific vehicle: a make and model in a year, price and mileage range, near a ZIP code. The trigger checks Auto.dev for dealer listings that match and passes on only the ones that are new since the last check. The workflow then looks up similar listings, averages their prices, and posts each new listing to Slack with how far above or below that average it is.\n\nThe first check only records what is already listed, so alerts start with cars listed after you activate the workflow. The average uses up to 20 similar listings, the most one request returns on the Free plan. On Growth or Scale, raise **Limit** in that node.\n\n### Setup\n1. This template uses the verified community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It works on n8n Cloud and self-hosted: an owner or admin installs it from the nodes panel ([guide](https://docs.n8n.io/integrations/community-nodes/installation/verified-install/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Every call here is on the Free plan: one request per check, and one more when something new is found.\n3. In **Watch for new listings**, set make, model, year range, price range, mileage range, ZIP code and distance, and how often to check. **Get similar listings on the market** reads the same search, so if you add or remove a filter, do it in both nodes.\n4. In **Send alert to Slack**, add your Slack credential and pick a channel.\n\n### Customization\nAdd trim, body style or fuel filters. Add an If node to alert only below the average. Swap Slack for email or Telegram.",
         "height": 680,
         "width": 520
       },
@@ -13,7 +13,7 @@
         -760,
         -160
       ],
-      "id": "74cc096a-ceab-4213-b097-082897145455",
+      "id": "64923e6a-da06-4347-9bd2-a63e62efe887",
       "name": "Overview"
     },
     {
@@ -29,7 +29,7 @@
         -180,
         -160
       ],
-      "id": "0c3c6891-1d05-4cee-ba52-c7ed8b42d9e9",
+      "id": "bb289b38-ce23-49c1-a3b4-027d726c5095",
       "name": "Note search"
     },
     {
@@ -45,12 +45,12 @@
         160,
         -160
       ],
-      "id": "37b72b09-d054-4818-b34e-b5c67274c231",
+      "id": "8642dd27-7328-47a8-a545-e8b161b5ed57",
       "name": "Note market"
     },
     {
       "parameters": {
-        "content": "## Send the alert\nPosts the car, its price and the difference from the market average.",
+        "content": "## Send the alert\nPosts each car as a card: photo, price, mileage, the market average and a button to the listing.",
         "height": 130,
         "width": 460,
         "color": 7
@@ -61,7 +61,7 @@
         880,
         -160
       ],
-      "id": "402e5774-6d00-4a22-893c-1b93fc4c1056",
+      "id": "022136d5-623e-4859-9762-8e1f839be667",
       "name": "Note alert"
     },
     {
@@ -91,7 +91,7 @@
         -100,
         40
       ],
-      "id": "f65996bb-55c0-430a-9cbc-54229cff31ea",
+      "id": "2ce181f6-a1cf-425b-9011-1da7169d4e1f",
       "name": "Watch for new listings"
     },
     {
@@ -117,7 +117,7 @@
         220,
         160
       ],
-      "id": "0367af8a-37b2-4ea9-9e65-fa2c2ff9ff8c",
+      "id": "3e53a2b9-638f-416e-b47b-becf17c80669",
       "name": "Get similar listings on the market",
       "executeOnce": true
     },
@@ -143,7 +143,7 @@
         440,
         160
       ],
-      "id": "824529f3-05e2-4940-a247-bdd58f3b1160",
+      "id": "63949783-08cc-47f0-8cf1-d4b7bac879a3",
       "name": "Calculate the market average"
     },
     {
@@ -158,7 +158,7 @@
         680,
         40
       ],
-      "id": "8b986ca4-d6b2-4190-8133-659f901a3069",
+      "id": "04875a6e-7c53-41f6-b491-c5f4e0b06582",
       "name": "Add the market average to each listing"
     },
     {
@@ -166,9 +166,63 @@
         "assignments": {
           "assignments": [
             {
-              "id": "1079ec31-f8b5-43a6-b574-383bef28d8f9",
-              "name": "message",
-              "value": "=New listing: {{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }} {{ $json.vehicle.trim }}\nPrice: ${{ $json.retailListing.price }} | Mileage: {{ $json.retailListing.miles }}\nMarket: ${{ Math.abs(Math.round($json.average_price - $json.retailListing.price)) }} {{ $json.retailListing.price <= $json.average_price ? 'below' : 'above' }} the average of {{ $json.count_vin }} similar listings (${{ Math.round($json.average_price) }})\nDealer: {{ $json.retailListing.dealer }}, {{ $json.retailListing.state }}\nVIN: {{ $json.vin }}\n{{ $json.retailListing.vdp }}",
+              "id": "d0e1775e-9dfe-4081-82cb-20487e4f0189",
+              "name": "title",
+              "value": "={{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }} {{ $json.vehicle.trim }}",
+              "type": "string"
+            },
+            {
+              "id": "1fa925c2-40e1-48ab-9ead-828dfbde79b1",
+              "name": "price",
+              "value": "=${{ $json.retailListing.price.toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "53ae9a8b-88b0-463a-ae09-8c7e99d42963",
+              "name": "mileage",
+              "value": "={{ $json.retailListing.miles.toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "46eb3bbf-bfac-49ce-99a8-c37564d2d590",
+              "name": "market_gap",
+              "value": "=${{ Math.abs(Math.round($json.average_price - $json.retailListing.price)).toLocaleString('en-US') }} {{ $json.retailListing.price <= $json.average_price ? 'below' : 'above' }} market",
+              "type": "string"
+            },
+            {
+              "id": "796fc0ef-2a87-4d1a-8827-706359425b0b",
+              "name": "market_average",
+              "value": "=${{ Math.round($json.average_price).toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "d8eb30ac-f54e-48cf-82ab-a24c76b57ce7",
+              "name": "similar",
+              "value": "={{ $json.count_vin }}",
+              "type": "string"
+            },
+            {
+              "id": "d67e5bae-47dc-4428-9192-dbdc54ab259a",
+              "name": "dealer",
+              "value": "={{ $json.retailListing.dealer }}, {{ $json.retailListing.state }}",
+              "type": "string"
+            },
+            {
+              "id": "db867122-6d29-47c5-b64f-e91a3b0289d2",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "43c6be05-e5a3-4174-91d4-4c68aed10548",
+              "name": "link",
+              "value": "={{ $json.retailListing.vdp }}",
+              "type": "string"
+            },
+            {
+              "id": "f4523ee4-6bd8-4e11-b338-a545d9f1aad2",
+              "name": "photo",
+              "value": "={{ $json.retailListing.primaryImage }}",
               "type": "string"
             }
           ]
@@ -181,7 +235,7 @@
         960,
         40
       ],
-      "id": "31e8bb0b-bcff-4137-b5e6-4fe639c79b83",
+      "id": "126cbd65-2fa7-41c3-89b2-bfb936cbf9ec",
       "name": "Build the alert message"
     },
     {
@@ -193,8 +247,12 @@
           "mode": "list",
           "cachedResultName": ""
         },
-        "text": "={{ $json.message }}",
-        "otherOptions": {}
+        "messageType": "block",
+        "blocksUi": "={{ {\n  \"blocks\": [\n    {\n      \"type\": \"card\",\n      ...($json.photo ? { \"hero_image\": { \"type\": \"image\", \"image_url\": $json.photo, \"alt_text\": $json.title } } : {}),\n      \"title\": { \"type\": \"mrkdwn\", \"text\": $json.title },\n      \"subtitle\": { \"type\": \"mrkdwn\", \"text\": $json.price + \" \u00b7 \" + $json.mileage + \" mi\" },\n      \"body\": { \"type\": \"mrkdwn\", \"text\": \"`\" + $json.vin + \"`\\n\\n*\" + $json.market_gap + \"* \u00b7 Average of \" + $json.similar + \" similar listings: \" + $json.market_average },\n      \"subtext\": { \"type\": \"mrkdwn\", \"text\": \"\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\\n\" + $json.dealer },\n      \"actions\": [\n        { \"type\": \"button\", \"style\": \"primary\", \"text\": { \"type\": \"plain_text\", \"text\": \"View listing\" }, \"url\": $json.link, \"action_id\": \"view_listing\" }\n      ]\n    }\n  ]\n} }}",
+        "text": "=New listing: {{ $json.title }}, {{ $json.price }}, {{ $json.market_gap }}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
       },
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
@@ -202,7 +260,7 @@
         1180,
         40
       ],
-      "id": "fb43c0b6-4a95-49a4-9593-60d71325a29d",
+      "id": "f2f6b660-f495-4ac5-9075-8d4694f287d5",
       "name": "Send alert to Slack"
     }
   ],

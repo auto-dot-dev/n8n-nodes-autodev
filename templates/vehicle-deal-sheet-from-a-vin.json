@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Build a vehicle deal sheet from a VIN\n\n### How it works\nFor dealers, brokers and lenders who quote a car to a buyer. A form takes the VIN, sale price, the buyer's ZIP code, down payment and credit score. The workflow decodes the VIN, calculates the monthly payment with taxes and fees for that ZIP code, gets loan rates for 36 to 84 month terms at that credit score, and estimates the five-year cost to own. The result is shown as a one-page deal sheet when the form is submitted.\n\nRates and costs are estimates for quoting, not a lender's offer. Ownership cost is not available for every vehicle (older models, for example); the deal sheet says so and still shows the rest.\n\n### Setup\n1. This template uses the community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It needs a self-hosted n8n until the node is verified. Install it from **Settings > Community Nodes** ([guide](https://docs.n8n.io/integrations/community-nodes/installation/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Payments, interest rates and ownership cost need the Growth plan or higher. The run makes four API requests.\n3. Select the credential in the four Auto.dev nodes.\n4. Activate the workflow and open the form's production URL from **Deal sheet request**.\n\n### Customization\nAdd a Gmail or Outlook node after **Build the deal sheet** to email it to the buyer. Write each quote to your CRM or a Google Sheet. Change the loan term in **Calculate the loan payment**.",
+        "content": "## Build a vehicle deal sheet from a VIN\n\n### How it works\nFor dealers, brokers and lenders who quote a car to a buyer. A form takes the VIN, sale price, the buyer's ZIP code, down payment and credit score. The workflow decodes the VIN, calculates the monthly payment with taxes and fees for that ZIP code, gets loan rates for 36 to 84 month terms at that credit score, and estimates the five-year cost to own. The result is shown as a one-page deal sheet when the form is submitted.\n\nRates and costs are estimates for quoting, not a lender's offer. Ownership cost is not available for every vehicle (older models, for example); the deal sheet says so and still shows the rest.\n\n### Setup\n1. This template uses the verified community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It works on n8n Cloud and self-hosted: an owner or admin installs it from the nodes panel ([guide](https://docs.n8n.io/integrations/community-nodes/installation/verified-install/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Payments, interest rates and ownership cost need the Growth plan or higher. The run makes four API requests.\n3. Select the credential in the four Auto.dev nodes.\n4. Activate the workflow and open the form's production URL from **Deal sheet request**.\n\n### Customization\nAdd a Gmail or Outlook node after **Build the deal sheet** to email it to the buyer. Write each quote to your CRM or a Google Sheet. Change the loan term in **Calculate the loan payment**.",
         "height": 620,
         "width": 520
       },
@@ -13,7 +13,7 @@
         -760,
         -160
       ],
-      "id": "62814a28-cb7a-4b1d-ac89-d79b1b66f01e",
+      "id": "2649d59f-26d6-473a-a17f-f882a4d70b93",
       "name": "Overview"
     },
     {
@@ -29,7 +29,7 @@
         -180,
         -160
       ],
-      "id": "4a756dba-5e4e-411d-be25-d53d96bb36da",
+      "id": "a3da98f0-ae33-4111-ad13-a2f8d073d1dc",
       "name": "Note input"
     },
     {
@@ -45,7 +45,7 @@
         160,
         -160
       ],
-      "id": "08543a45-5ea2-4837-9fff-728d19f032c5",
+      "id": "32124815-4266-4b36-9826-6f31d6373192",
       "name": "Note data"
     },
     {
@@ -61,7 +61,7 @@
         1100,
         -160
       ],
-      "id": "81ea2824-e672-4b23-87f2-bf960ea0f704",
+      "id": "9a9dfe82-a1ef-44b6-980e-406e1f90d157",
       "name": "Note out"
     },
     {
@@ -107,7 +107,7 @@
         -100,
         40
       ],
-      "id": "f24f167b-0efd-4e3a-bd9e-587821fb6475",
+      "id": "7910fa75-020e-4819-93ff-30ca77344c60",
       "name": "Deal sheet request"
     },
     {
@@ -123,7 +123,7 @@
         220,
         40
       ],
-      "id": "094e8414-231d-4366-9e34-52f422ea0103",
+      "id": "ee89607f-f0bc-44e9-8a79-91d33a2423d4",
       "name": "Decode the VIN"
     },
     {
@@ -145,7 +145,7 @@
         440,
         40
       ],
-      "id": "8068ada8-758e-4321-beb8-45b840fa8fd8",
+      "id": "cbb1530e-55af-4bca-ad21-ad20b4e93247",
       "name": "Calculate the loan payment"
     },
     {
@@ -165,7 +165,7 @@
         660,
         40
       ],
-      "id": "b79ea805-df51-4baf-b80b-57eeb7ba97c9",
+      "id": "9db12d2a-95b2-4e2b-8aee-536b47000b58",
       "name": "Get loan rates by term"
     },
     {
@@ -184,7 +184,7 @@
         880,
         40
       ],
-      "id": "f4b23c94-9e9d-4ae8-b25d-a0a741d3bea4",
+      "id": "780352f1-1073-4946-ba13-83fcc8128fcd",
       "name": "Get five-year ownership cost",
       "onError": "continueRegularOutput"
     },
@@ -193,49 +193,49 @@
         "assignments": {
           "assignments": [
             {
-              "id": "d01e1caa-1305-404f-acf5-2744390c6053",
+              "id": "7a98e257-b112-46da-8fb7-48e7e03d4548",
               "name": "vehicle",
               "value": "={{ $('Decode the VIN').item.json.year }} {{ $('Decode the VIN').item.json.make }} {{ $('Decode the VIN').item.json.model }} {{ $('Decode the VIN').item.json.trim }}",
               "type": "string"
             },
             {
-              "id": "a87f881b-67b8-4f9a-a686-69955baa383e",
+              "id": "2ac98f90-6599-4419-9eb4-974dfc7cf0a0",
               "name": "price",
               "value": "={{ $('Deal sheet request').item.json.Price }}",
               "type": "number"
             },
             {
-              "id": "2f47cafd-16b9-4291-9237-2b03d08ff8b7",
+              "id": "b65fb3f5-c915-436d-9fb6-796afaaa2263",
               "name": "monthlyPayment",
               "value": "={{ $('Calculate the loan payment').item.json.paymentsData.loanMonthlyPaymentWithTaxes }}",
               "type": "number"
             },
             {
-              "id": "6661f815-15a8-48fd-8c4c-736c7bb3768e",
+              "id": "ee763cbc-0b5e-40a1-b514-09bea02bb9ce",
               "name": "loanAmount",
               "value": "={{ $('Calculate the loan payment').item.json.paymentsData.loanAmount }}",
               "type": "number"
             },
             {
-              "id": "86834d5f-7c70-4ac3-a11c-3b2ed0cf1626",
+              "id": "c43968a8-1f2b-496a-8abe-60aac655afd6",
               "name": "taxesAndFees",
               "value": "={{ $('Calculate the loan payment').item.json.paymentsData.totalTaxesAndFees }}",
               "type": "number"
             },
             {
-              "id": "47f478cb-edb7-4011-bb35-224f3410cff7",
+              "id": "8ff75383-6575-41aa-9b5b-6fb7bf9407e0",
               "name": "term",
               "value": "={{ $('Calculate the loan payment').item.json.paymentsData.calculationCriteria.numberOfMonths }} months at {{ $('Calculate the loan payment').item.json.paymentsData.calculationCriteria.financeRate }}%",
               "type": "string"
             },
             {
-              "id": "c33dd0c0-9f94-40d5-a998-301642e400e6",
+              "id": "ba2ef052-cd3a-4ed5-9196-86f9d4c556f8",
               "name": "rates",
               "value": "={{ Object.entries($('Get loan rates by term').item.json.apr || {}).map(([months, rate]) => months + ' months: ' + rate + '%').join(', ') }}",
               "type": "string"
             },
             {
-              "id": "bdfec8bc-5cc1-4c9d-86f8-06060279138c",
+              "id": "81ed7596-5147-49d1-8031-5a13d849904e",
               "name": "fiveYearCost",
               "value": "={{ $json.tco ? '$' + $json.tco.total.tcoPrice + ' ($' + $json.tco.total.averageCostPerMile + ' per mile)' : 'not available for this vehicle' }}",
               "type": "string"
@@ -250,7 +250,7 @@
         1180,
         40
       ],
-      "id": "03f9e486-5abc-4e38-b06f-822c0601b2ab",
+      "id": "3c60d8f4-5ad0-4f05-ad5d-79c844cd023e",
       "name": "Build the deal sheet"
     },
     {
@@ -266,7 +266,7 @@
         1400,
         40
       ],
-      "id": "a43f4f74-a235-4cbd-8662-3b8d9caec254",
+      "id": "c84008d3-10cc-410a-bcbe-1ad3552e2f0c",
       "name": "Show the deal sheet"
     }
   ],

@@ -3,7 +3,7 @@
   "nodes": [
     {
       "parameters": {
-        "content": "## Check a vehicle in by license plate and flag open recalls\n\n### How it works\nFor service departments, body shops and fleet managers. An advisor enters the customer's name, plate and state in a form. The workflow turns the plate into a VIN with the year, make and model, then checks that exact vehicle for safety recalls that have not been repaired. If there are open recalls, the advisor sees each one with its remedy, and a warning when the manufacturer says not to drive or to park outside. If there are none, the advisor sees a clear result.\n\nIf the plate cannot be matched, the advisor is told to check it or use the VIN.\n\n### Setup\n1. This template uses the community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It needs a self-hosted n8n until the node is verified. Install it from **Settings > Community Nodes** ([guide](https://docs.n8n.io/integrations/community-nodes/installation/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Plate to VIN and open recalls need the Scale plan. The run makes two API requests.\n3. Select the credential in the two Auto.dev nodes.\n4. Activate the workflow and open the form's production URL from **Vehicle check-in form**.\n\n### Customization\nSend the recall summary to the service team in Slack or Teams. Create a repair order line in your shop system. Add the Auto.dev **Get Specifications** operation to show engine and trim details at check-in.",
+        "content": "## Check a vehicle in by license plate and flag open recalls\n\n### How it works\nFor service departments, body shops and fleet managers. An advisor enters the customer's name, plate and state in a form. The workflow turns the plate into a VIN with the year, make and model, then checks that exact vehicle for safety recalls that have not been repaired. If there are open recalls, the advisor sees each one with its remedy, and a warning when the manufacturer says not to drive or to park outside. If there are none, the advisor sees a clear result.\n\nIf the plate cannot be matched, the advisor is told to check it or use the VIN.\n\n### Setup\n1. This template uses the verified community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It works on n8n Cloud and self-hosted: an owner or admin installs it from the nodes panel ([guide](https://docs.n8n.io/integrations/community-nodes/installation/verified-install/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Plate to VIN and open recalls need the Scale plan. The run makes two API requests.\n3. Select the credential in the two Auto.dev nodes.\n4. Activate the workflow and open the form's production URL from **Vehicle check-in form**.\n\n### Customization\nSend the recall summary to the service team in Slack or Teams. Create a repair order line in your shop system. Add the Auto.dev **Get Specifications** operation to show engine and trim details at check-in.",
         "height": 620,
         "width": 520
       },
@@ -13,7 +13,7 @@
         -760,
         -160
       ],
-      "id": "b876fa0a-d586-4155-a659-cddb08d338f3",
+      "id": "e498d05d-1495-41b8-baa2-1452b0d3af18",
       "name": "Overview"
     },
     {
@@ -29,7 +29,7 @@
         -180,
         -160
       ],
-      "id": "ddf83b49-a2e0-408a-9963-a814ef4bb838",
+      "id": "e6470dc4-afdb-472b-86a4-267334ee030b",
       "name": "Note input"
     },
     {
@@ -45,7 +45,7 @@
         160,
         -160
       ],
-      "id": "9e5704da-a4db-4c51-86c0-11aace3d1d30",
+      "id": "c8994be0-c45d-4f97-aacf-c5bed5a1bc41",
       "name": "Note data"
     },
     {
@@ -61,7 +61,7 @@
         640,
         -160
       ],
-      "id": "8361ea39-aa7c-4fa9-a318-c1b6c1b4b53f",
+      "id": "dd57b047-5fd5-4d42-aa54-0831fe41ece3",
       "name": "Note out"
     },
     {
@@ -95,7 +95,7 @@
         -100,
         40
       ],
-      "id": "430ae805-1384-4b6e-bbd0-b09f4e599743",
+      "id": "94a54697-fa2d-4615-a996-923a96cdbc8d",
       "name": "Vehicle check-in form"
     },
     {
@@ -112,7 +112,7 @@
         220,
         40
       ],
-      "id": "2c982cc6-236a-453d-9402-506fd7a3eb0b",
+      "id": "723bbc4b-3ab8-40ce-bb93-56d11212808a",
       "name": "Find the VIN from the plate",
       "onError": "continueErrorOutput"
     },
@@ -121,13 +121,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "b54df0d0-36c3-4fbe-a95d-d1bba7f02744",
+              "id": "e3e541c8-2870-4b1c-af0f-08a8d5bb8154",
               "name": "title",
               "value": "=No vehicle found for plate {{ $('Vehicle check-in form').item.json.Plate }} ({{ $('Vehicle check-in form').item.json.State }})",
               "type": "string"
             },
             {
-              "id": "6ca45e45-6ed0-47f5-a58d-03a815a44657",
+              "id": "6062dbc8-860b-4cda-8125-00355d36b4b8",
               "name": "message",
               "value": "=Customer: {{ $('Vehicle check-in form').item.json.Customer }}\nCheck the plate and state and try again, or look the vehicle up by VIN.",
               "type": "string"
@@ -142,7 +142,7 @@
         940,
         360
       ],
-      "id": "58eb9853-73fe-4349-a257-2255779f5794",
+      "id": "4e193607-8218-4445-a5a5-487749511936",
       "name": "Report the plate was not found"
     },
     {
@@ -159,7 +159,7 @@
         440,
         40
       ],
-      "id": "d02957ae-05ed-44e6-b965-8ceb833830df",
+      "id": "686f621e-6d93-4ec6-91f5-93c734fff6bc",
       "name": "Check for open recalls"
     },
     {
@@ -173,7 +173,7 @@
           },
           "conditions": [
             {
-              "id": "018ceb0a-3fa5-425d-854f-bc1db0e0b345",
+              "id": "27f4796a-2242-4440-833f-56738f8e25f8",
               "leftValue": "={{ $json.openRecalls }}",
               "rightValue": 0,
               "operator": {
@@ -192,7 +192,7 @@
         700,
         40
       ],
-      "id": "2b76ff47-8a38-4da0-b2cf-8e807e6aed72",
+      "id": "7b5870d9-3843-41c2-a022-25568cb62b6a",
       "name": "Has open recalls"
     },
     {
@@ -200,13 +200,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "53c195d7-e266-4060-9cb9-0f9553caa267",
+              "id": "d6328e19-9dbf-46d3-8a82-c7963c4438c9",
               "name": "title",
               "value": "={{ $json.openRecalls }} open recall(s): {{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }}",
               "type": "string"
             },
             {
-              "id": "9719d9dc-9aec-450a-82ec-914a0f067898",
+              "id": "57d574dc-c525-4575-b4cb-abb33a05463e",
               "name": "message",
               "value": "=Customer: {{ $('Vehicle check-in form').item.json.Customer }}\nVIN: {{ $json.vehicle.vin }}\n\n{{ $json.data.map(r => (r.parkIt ? 'DO NOT DRIVE. ' : '') + (r.parkOutSide ? 'PARK OUTSIDE. ' : '') + r.component + ' (' + r.nhtsaCampaignNumber + '): ' + r.remedy).join('\\n\\n') }}",
               "type": "string"
@@ -221,7 +221,7 @@
         940,
         -40
       ],
-      "id": "df56e623-33ed-44fb-98e0-085abb9b1925",
+      "id": "b7c55102-9e54-4fec-b019-ca5890cf811b",
       "name": "Summarize the recall work"
     },
     {
@@ -229,13 +229,13 @@
         "assignments": {
           "assignments": [
             {
-              "id": "5a5f1e67-d7c4-4b16-bd90-0c2a67656685",
+              "id": "e06261b5-c11a-4937-afb8-a976210ac075",
               "name": "title",
               "value": "=No open recalls: {{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }}",
               "type": "string"
             },
             {
-              "id": "1ac50e97-a8c9-46a4-98fb-8c3b6211357b",
+              "id": "cd67c2c2-1dcf-486e-95cc-817c3623a26c",
               "name": "message",
               "value": "=Customer: {{ $('Vehicle check-in form').item.json.Customer }}\nVIN: {{ $json.vehicle.vin }}\nRecalls issued for this vehicle: {{ $json.totalRecalls }}. None are open.",
               "type": "string"
@@ -250,7 +250,7 @@
         940,
         160
       ],
-      "id": "04258821-4b19-4ee8-9537-b1f7d3a51259",
+      "id": "3a2536a0-e727-468e-91c4-0236fe678881",
       "name": "Confirm no open recalls"
     },
     {
@@ -266,7 +266,7 @@
         1180,
         40
       ],
-      "id": "6b464867-fa3e-48b2-bcf6-151b1b0d6e84",
+      "id": "fade7ef7-0a3b-4345-8e19-61cc66d70902",
       "name": "Show the result"
     }
   ],
