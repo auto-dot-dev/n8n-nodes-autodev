@@ -1,10 +1,10 @@
 {
-  "name": "Get a market alert in Slack when the car you want is listed with Auto.dev",
+  "name": "Track car deals and price drops in Slack with Auto.dev",
   "nodes": [
     {
       "parameters": {
-        "content": "## Get a market alert when the car you want is listed\n\n### How it works\nFor anyone watching the market for one specific vehicle: a make and model in a year, price and mileage range, near a ZIP code. The trigger checks Auto.dev for dealer listings that match and passes on only the ones that are new since the last check. The workflow then looks up similar listings, averages their prices, and posts each new listing to Slack as a card with how far above or below that average it is.\n\nThe first check only records what is already listed, so alerts start with cars listed after you activate the workflow. The average uses up to 20 similar listings, the most one request returns on the Free plan. On Growth or Scale, raise **Limit** in that node.\n\n### Setup\n1. This template uses the verified community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It works on n8n Cloud and self-hosted: an owner or admin installs it from the nodes panel ([guide](https://docs.n8n.io/integrations/community-nodes/installation/verified-install/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Every call here is on the Free plan: one request per check, and one more when something new is found.\n3. In **Watch for new listings**, set make, model, year range, price range, mileage range, ZIP code and distance, and how often to check. **Get similar listings on the market** reads the same search, so if you add or remove a filter, do it in both nodes.\n4. In **Send alert to Slack**, add your Slack credential (a bot token with `chat:write` is enough) and pick a channel.\n\n### Customization\nAdd trim, body style or fuel filters. Add an If node to alert only below the average. Swap Slack for email or Telegram.",
-        "height": 680,
+        "content": "## Track a car's market: deal alerts and price drops in Slack\n\n### How it works\nFor anyone shopping for one specific vehicle: a make and model in a year, price and mileage range, near a ZIP code.\n\n- **New listings.** The trigger passes on listings that are new since its last check. Each one is compared with the average price of similar cars and saved to an n8n data table. Cars priced no more than $500 over the average are posted to Slack.\n- **Price drops.** Once a day it compares current prices with the table. A car whose price fell is posted to Slack, and the table is updated.\n\nThe first check only records what is already listed. A Free plan request returns up to 20 listings, so the average and the daily check each cover 20 cars.\n\n### Setup\n1. This template uses the verified community node `n8n-nodes-autodev` (tested with version 0.1.0 on n8n 2.47). It works on n8n Cloud and self-hosted: an owner or admin installs it from the nodes panel ([guide](https://docs.n8n.io/integrations/community-nodes/installation/verified-install/)).\n2. Create an **Auto.dev API** credential with a key from [auto.dev](https://www.auto.dev/dashboard/api-keys). Every call is on the Free plan: one request per check, one more when a listing is new, and one a day for price drops.\n3. Run **Create the market log** once. It adds the `Car market log` data table.\n4. In **Watch for new listings**, set your search and how often to check. The two other Auto.dev nodes read the same search.\n5. In **Send alert to Slack**, add a Slack credential (a bot token with `chat:write`) and pick a channel.\n6. Activate the workflow.\n\n### Customization\nSet -500 to 500 in **Is it fairly priced?** to get only cars $500 under the average. Swap Slack for email or Telegram.",
+        "height": 760,
         "width": 520
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -13,12 +13,12 @@
         -760,
         -160
       ],
-      "id": "16988d0f-83de-453c-8d41-7bef704e3c0c",
+      "id": "44e66fd0-05ed-41bf-8019-01aa5dbd607a",
       "name": "Overview"
     },
     {
       "parameters": {
-        "content": "## Watch the market\nChecks Auto.dev for your exact search. Only listings not seen before continue.",
+        "content": "## Watch the market\nChecks Auto.dev for your search. Only listings not seen before continue.",
         "height": 130,
         "width": 300,
         "color": 7
@@ -29,14 +29,14 @@
         -180,
         -160
       ],
-      "id": "fed8b486-9fee-487e-bc14-c3ad5c2f9be4",
+      "id": "1fd87858-b8b4-4bb4-8387-7be5aaff68e1",
       "name": "Note search"
     },
     {
       "parameters": {
-        "content": "## Compare with the market\nGets similar listings once per check and adds their average price to each new listing.",
+        "content": "## Compare with the market\nAverages the prices of similar listings and scores each new car against that average.",
         "height": 130,
-        "width": 680,
+        "width": 900,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -45,12 +45,28 @@
         160,
         -160
       ],
-      "id": "1a6cdbac-5844-4336-9572-29440ae93ba5",
+      "id": "c251b4ae-a8f5-43aa-b6c1-f5507f4b57b7",
       "name": "Note market"
     },
     {
       "parameters": {
-        "content": "## Send the alert\nPosts each car as a card: photo, price, mileage, the market average and a button to the listing.",
+        "content": "## Log it, then filter\nEvery car is saved to the data table. Overpriced cars stop here; the rest go to Slack.",
+        "height": 130,
+        "width": 300,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        -160
+      ],
+      "id": "5617938f-d5a8-4d62-a2f3-5fefb6fa3e7c",
+      "name": "Note log"
+    },
+    {
+      "parameters": {
+        "content": "## Send the alert\nPosts a card: photo, price, mileage, the deal or price drop, and a button to the listing.",
         "height": 130,
         "width": 460,
         "color": 7
@@ -58,11 +74,59 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        880,
+        1440,
         -160
       ],
-      "id": "78127407-77c7-47c9-8d34-ffa73e12f188",
+      "id": "03ea0911-c249-4951-856f-5be3d9cba1ad",
       "name": "Note alert"
+    },
+    {
+      "parameters": {
+        "content": "## Check for price drops\nOnce a day, matches current prices to the logged cars by VIN and keeps the ones that fell.",
+        "height": 130,
+        "width": 1240,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        400
+      ],
+      "id": "114b2b2f-dc88-4b31-8fdb-17d01d67da82",
+      "name": "Note drops"
+    },
+    {
+      "parameters": {
+        "content": "## Remember the new price\nSaves the lower price so each drop alerts once.",
+        "height": 110,
+        "width": 300,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1100,
+        400
+      ],
+      "id": "a4a4e5b9-9781-4c7e-93a3-eb572f4e390a",
+      "name": "Note update"
+    },
+    {
+      "parameters": {
+        "content": "## Run once\nCreates the data table that holds the log.",
+        "height": 100,
+        "width": 520,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        660
+      ],
+      "id": "eea86a46-b406-44a6-91bf-fb1054418d8e",
+      "name": "Note setup"
     },
     {
       "parameters": {
@@ -91,7 +155,7 @@
         -100,
         40
       ],
-      "id": "c699a2d8-f865-4819-8be2-9f2feb861c0e",
+      "id": "f3043da8-8ac6-4511-b3e5-86d33e882a82",
       "name": "Watch for new listings"
     },
     {
@@ -117,7 +181,7 @@
         220,
         160
       ],
-      "id": "c7cf3188-43f4-4dbc-a93a-4150a0cdbf67",
+      "id": "e42cc31c-82b8-479f-98ce-f4e0e8612dbf",
       "name": "Get similar listings on the market",
       "executeOnce": true
     },
@@ -143,7 +207,7 @@
         440,
         160
       ],
-      "id": "df6c59c2-27fb-4591-98fb-7c21d55dcf07",
+      "id": "76ff61e2-b3ed-4093-9af9-af6af1f318f9",
       "name": "Calculate the market average"
     },
     {
@@ -158,7 +222,7 @@
         680,
         40
       ],
-      "id": "0468a942-129d-444e-8a4e-0e10b1b95c3f",
+      "id": "a904f1a5-d295-45ff-b79c-8cc994e2f229",
       "name": "Add the market average to each listing"
     },
     {
@@ -166,63 +230,69 @@
         "assignments": {
           "assignments": [
             {
-              "id": "487a9bc8-0363-4922-b651-9c933e034a15",
-              "name": "title",
-              "value": "={{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }} {{ $json.vehicle.trim }}",
-              "type": "string"
-            },
-            {
-              "id": "ee2901f1-36bf-449f-8078-a16dc4dfc39a",
-              "name": "price",
-              "value": "=${{ $json.retailListing.price.toLocaleString('en-US') }}",
-              "type": "string"
-            },
-            {
-              "id": "bc71447a-3ce3-4f43-8abb-4268bc29b4f3",
-              "name": "mileage",
-              "value": "={{ $json.retailListing.miles.toLocaleString('en-US') }}",
-              "type": "string"
-            },
-            {
-              "id": "71b49fa5-b447-42b9-9c30-1105e6e02c47",
-              "name": "market_gap",
-              "value": "=${{ Math.abs(Math.round($json.average_price - $json.retailListing.price)).toLocaleString('en-US') }} {{ $json.retailListing.price <= $json.average_price ? 'below' : 'above' }} market",
-              "type": "string"
-            },
-            {
-              "id": "53f1a686-8cb2-48c2-9bfc-2eafa7392a97",
-              "name": "market_average",
-              "value": "=${{ Math.round($json.average_price).toLocaleString('en-US') }}",
-              "type": "string"
-            },
-            {
-              "id": "51c1553c-ba12-416a-94cc-a07c2a539966",
-              "name": "similar",
-              "value": "={{ $json.count_vin }}",
-              "type": "string"
-            },
-            {
-              "id": "f93e4be0-e8e3-487e-83da-43a57ebafdb5",
-              "name": "dealer",
-              "value": "={{ $json.retailListing.dealer }}, {{ $json.retailListing.state }}",
-              "type": "string"
-            },
-            {
-              "id": "30aa66d4-28b3-44b5-8aeb-a155ce3dd458",
+              "id": "ca3bdf9f-1036-4a5d-8782-ca83743e5816",
               "name": "vin",
               "value": "={{ $json.vin }}",
               "type": "string"
             },
             {
-              "id": "e0a714e3-dbce-4027-8267-f218f82e985e",
+              "id": "30e34a8e-da92-4bdd-bc97-8c90d0f5dba9",
+              "name": "title",
+              "value": "={{ $json.vehicle.year }} {{ $json.vehicle.make }} {{ $json.vehicle.model }} {{ $json.vehicle.trim }}",
+              "type": "string"
+            },
+            {
+              "id": "b78d32a1-1ce0-48df-a601-825be9d5df9f",
+              "name": "price",
+              "value": "={{ $json.retailListing.price }}",
+              "type": "number"
+            },
+            {
+              "id": "b9d718ec-e3db-48d4-baf7-e129d514568a",
+              "name": "miles",
+              "value": "={{ $json.retailListing.miles }}",
+              "type": "number"
+            },
+            {
+              "id": "e767c3b5-d628-46d3-830d-f984189dafd8",
+              "name": "market_average",
+              "value": "={{ Math.round($json.average_price) }}",
+              "type": "number"
+            },
+            {
+              "id": "e2f2cf20-88da-4784-b1d2-bd25f260f37b",
+              "name": "below_market",
+              "value": "={{ Math.round($json.average_price - $json.retailListing.price) }}",
+              "type": "number"
+            },
+            {
+              "id": "bb7932dc-d1fa-43f0-8e1f-deccd1755b4c",
+              "name": "dealer",
+              "value": "={{ $json.retailListing.dealer }}, {{ $json.retailListing.state }}",
+              "type": "string"
+            },
+            {
+              "id": "a3af06f9-9781-4df4-8f46-72efd07a1931",
               "name": "link",
               "value": "={{ $json.retailListing.vdp }}",
               "type": "string"
             },
             {
-              "id": "60d53629-74f9-4e3c-bf03-b2e34d577e40",
+              "id": "89599424-17d8-4d3b-a25e-0f7ef32052c6",
               "name": "photo",
               "value": "={{ $json.retailListing.primaryImage }}",
+              "type": "string"
+            },
+            {
+              "id": "3396afed-c644-4087-a1c3-05e7beca295f",
+              "name": "headline",
+              "value": "=${{ (Math.abs(Math.round($json.average_price - $json.retailListing.price))).toLocaleString('en-US') }} {{ $json.retailListing.price <= $json.average_price ? 'below' : 'above' }} market",
+              "type": "string"
+            },
+            {
+              "id": "750175b5-8193-4131-a941-a741b1f504a2",
+              "name": "detail",
+              "value": "=Average of {{ $json.count_vin }} similar listings: ${{ (Math.round($json.average_price)).toLocaleString('en-US') }}",
               "type": "string"
             }
           ]
@@ -232,10 +302,251 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        960,
+        900,
         40
       ],
-      "id": "deba1878-b263-4250-a750-671217895f37",
+      "id": "6515d0b4-d471-44da-97f8-98fdeba3b7ac",
+      "name": "Score the listing against the market"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Car market log"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "vin",
+              "condition": "eq",
+              "keyValue": "={{ $json.vin }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "vin": "={{ $json.vin }}",
+            "title": "={{ $json.title }}",
+            "first_price": "={{ $json.price }}",
+            "last_price": "={{ $json.price }}",
+            "miles": "={{ $json.miles }}",
+            "market_average": "={{ $json.market_average }}",
+            "dealer": "={{ $json.dealer }}",
+            "link": "={{ $json.link }}",
+            "photo": "={{ $json.photo }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "vin",
+              "displayName": "vin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "first_price",
+              "displayName": "first_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_price",
+              "displayName": "last_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "miles",
+              "displayName": "miles",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "market_average",
+              "displayName": "market_average",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "dealer",
+              "displayName": "dealer",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "link",
+              "displayName": "link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "photo",
+              "displayName": "photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1180,
+        200
+      ],
+      "id": "1f55d2b0-6562-4594-9f30-c045f3b473a2",
+      "name": "Save the listing to the log"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b9def1c2-2cbb-4b94-bc8e-34a89a130942",
+              "leftValue": "={{ $json.below_market }}",
+              "rightValue": -500,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1180,
+        40
+      ],
+      "id": "5d8d8237-239a-4d76-b38f-98cde644c49c",
+      "name": "Is it fairly priced?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "23d73f59-297c-4d95-bb62-2ee5eb965864",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "4cded1a3-d531-4251-b0f2-5a02da5e2207",
+              "name": "price",
+              "value": "=${{ ($json.price).toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "c9723794-166c-4a70-8f46-60f0052d7171",
+              "name": "mileage",
+              "value": "={{ $json.miles.toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "e651fed9-20a5-4ccf-acfe-fa164cea3891",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "d227dd8b-2470-441c-b16b-b1a1f8302a73",
+              "name": "headline",
+              "value": "={{ $json.headline }}",
+              "type": "string"
+            },
+            {
+              "id": "ccc6be7d-bebe-46fc-bf55-cc71fd4353d8",
+              "name": "detail",
+              "value": "={{ $json.detail }}",
+              "type": "string"
+            },
+            {
+              "id": "194b78e1-17a3-42ee-96c9-9db152b50393",
+              "name": "dealer",
+              "value": "={{ $json.dealer }}",
+              "type": "string"
+            },
+            {
+              "id": "e0fa8c7a-9837-47bd-a38e-7c59bdbbb110",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "3e03ca78-0ace-4f32-9e43-c0d3e3650551",
+              "name": "photo",
+              "value": "={{ $json.photo }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        40
+      ],
+      "id": "3e643a55-f4c9-4ad7-bbad-24aaa508ba6a",
       "name": "Build the alert message"
     },
     {
@@ -248,8 +559,8 @@
           "cachedResultName": ""
         },
         "messageType": "block",
-        "blocksUi": "={{ {\n  \"blocks\": [\n    {\n      \"type\": \"card\",\n      ...($json.photo ? { \"hero_image\": { \"type\": \"image\", \"image_url\": $json.photo, \"alt_text\": $json.title } } : {}),\n      \"title\": { \"type\": \"mrkdwn\", \"text\": $json.title },\n      \"subtitle\": { \"type\": \"mrkdwn\", \"text\": $json.price + \" \u00b7 \" + $json.mileage + \" mi\" },\n      \"body\": { \"type\": \"mrkdwn\", \"text\": \"`\" + $json.vin + \"`\\n\\n*\" + $json.market_gap + \"* \u00b7 Average of \" + $json.similar + \" similar listings: \" + $json.market_average },\n      \"subtext\": { \"type\": \"mrkdwn\", \"text\": \"\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\\n\" + $json.dealer },\n      \"actions\": [\n        { \"type\": \"button\", \"style\": \"primary\", \"text\": { \"type\": \"plain_text\", \"text\": \"View listing\" }, \"url\": $json.link, \"action_id\": \"view_listing\" }\n      ]\n    }\n  ]\n} }}",
-        "text": "=New listing: {{ $json.title }}, {{ $json.price }}, {{ $json.market_gap }}",
+        "blocksUi": "={{ {\n  \"blocks\": [\n    {\n      \"type\": \"card\",\n      ...($json.photo ? { \"hero_image\": { \"type\": \"image\", \"image_url\": $json.photo, \"alt_text\": $json.title } } : {}),\n      \"title\": { \"type\": \"mrkdwn\", \"text\": $json.title },\n      \"subtitle\": { \"type\": \"mrkdwn\", \"text\": $json.price + \" \u00b7 \" + $json.mileage + \" mi\" },\n      \"body\": { \"type\": \"mrkdwn\", \"text\": \"`\" + $json.vin + \"`\\n\\n*\" + $json.headline + \"* \u00b7 \" + $json.detail },\n      \"subtext\": { \"type\": \"mrkdwn\", \"text\": \"\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\\n\" + $json.dealer },\n      \"actions\": [\n        { \"type\": \"button\", \"style\": \"primary\", \"text\": { \"type\": \"plain_text\", \"text\": \"View listing\" }, \"url\": $json.link, \"action_id\": \"view_listing\" }\n      ]\n    }\n  ]\n} }}",
+        "text": "={{ $json.title }}, {{ $json.price }}: {{ $json.headline }}",
         "otherOptions": {
           "includeLinkToWorkflow": false
         }
@@ -257,11 +568,317 @@
       "type": "n8n-nodes-base.slack",
       "typeVersion": 2.3,
       "position": [
-        1180,
+        1740,
         40
       ],
-      "id": "805f1aca-1aec-47d4-9537-f0c36aa28bc9",
+      "id": "06e20ede-09da-41f5-8513-e39983ee9ea2",
       "name": "Send alert to Slack"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        600
+      ],
+      "id": "f896086e-c34a-48d6-b8bf-adbf0d742d25",
+      "name": "Check prices every day"
+    },
+    {
+      "parameters": {
+        "resource": "listing",
+        "operation": "getAll",
+        "limit": 20,
+        "filters": {
+          "make": "={{ $('Watch for new listings').params.filters.make }}",
+          "model": "={{ $('Watch for new listings').params.filters.model }}",
+          "year": "={{ $('Watch for new listings').params.filters.year }}",
+          "price": "={{ $('Watch for new listings').params.filters.price }}",
+          "miles": "={{ $('Watch for new listings').params.filters.miles }}",
+          "zip": "={{ $('Watch for new listings').params.filters.zip }}",
+          "distance": "={{ $('Watch for new listings').params.filters.distance }}"
+        },
+        "options": {
+          "sort": "updatedAt.desc"
+        },
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-autodev.autoDev",
+      "typeVersion": 1,
+      "position": [
+        220,
+        540
+      ],
+      "id": "451cc37e-b8f8-47a1-8a28-9a0a9a2189fa",
+      "name": "Get current prices"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Car market log"
+        },
+        "matchType": "anyCondition",
+        "filters": {},
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        220,
+        700
+      ],
+      "id": "fb1162e2-4fed-4c3b-9543-26495fb4c289",
+      "name": "Get the logged listings"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "vin",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        460,
+        600
+      ],
+      "id": "64306647-9898-46b4-b481-fcd7c0169d2e",
+      "name": "Match prices to the log by VIN"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4030d5d1-cb10-4196-9412-d57ae6726eb5",
+              "leftValue": "={{ $json.price }}",
+              "rightValue": "={{ $json.last_price }}",
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        600
+      ],
+      "id": "a40f3ed4-eccf-460e-ac36-7f65c49f312c",
+      "name": "Has the price dropped?"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e6a16b06-a6df-4c35-81fc-c349eae2ea6b",
+              "name": "vin",
+              "value": "={{ $json.vin }}",
+              "type": "string"
+            },
+            {
+              "id": "cccd82ec-8bed-474e-a527-d4b988bee36e",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "d2b678d5-b95c-4d53-a389-dbb9467b5b00",
+              "name": "price",
+              "value": "={{ $json.price }}",
+              "type": "number"
+            },
+            {
+              "id": "b1c8df63-9a75-4426-b022-46019a684cab",
+              "name": "miles",
+              "value": "={{ $json.miles }}",
+              "type": "number"
+            },
+            {
+              "id": "1c53f734-f95a-4615-9e3b-5ba6ad714c02",
+              "name": "dealer",
+              "value": "={{ $json.dealer }}",
+              "type": "string"
+            },
+            {
+              "id": "b73279b3-8539-4aa4-9c2d-d20340548ea7",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            },
+            {
+              "id": "16dd8743-9f58-4c18-abcb-a33123cd913d",
+              "name": "photo",
+              "value": "={{ $json.photo }}",
+              "type": "string"
+            },
+            {
+              "id": "f78e8cfb-cacc-4109-91b9-515f4779ae19",
+              "name": "headline",
+              "value": "=Price dropped ${{ ($json.last_price - $json.price).toLocaleString('en-US') }}",
+              "type": "string"
+            },
+            {
+              "id": "21bfd581-acac-4a04-931a-5df34842ec8d",
+              "name": "detail",
+              "value": "=Was ${{ ($json.last_price).toLocaleString('en-US') }}. Market average when listed: ${{ ($json.market_average).toLocaleString('en-US') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        900,
+        600
+      ],
+      "id": "b01b0c3c-7c42-49f8-8449-a770d772546d",
+      "name": "Describe the price drop"
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Car market log"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "vin",
+              "condition": "eq",
+              "keyValue": "={{ $json.vin }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "last_price": "={{ $json.price }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "last_price",
+              "displayName": "last_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1180,
+        700
+      ],
+      "id": "ae0b8f6b-fced-4262-978e-cb5c287a5560",
+      "name": "Update the price in the log"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -700,
+        820
+      ],
+      "id": "5a258440-b3fa-4e86-b64c-b844caeade0d",
+      "name": "Run once to set up"
+    },
+    {
+      "parameters": {
+        "resource": "table",
+        "operation": "create",
+        "tableName": "Car market log",
+        "columns": {
+          "column": [
+            {
+              "name": "vin",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "first_price",
+              "type": "number"
+            },
+            {
+              "name": "last_price",
+              "type": "number"
+            },
+            {
+              "name": "miles",
+              "type": "number"
+            },
+            {
+              "name": "market_average",
+              "type": "number"
+            },
+            {
+              "name": "dealer",
+              "type": "string"
+            },
+            {
+              "name": "link",
+              "type": "string"
+            },
+            {
+              "name": "photo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "createIfNotExists": true
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -460,
+        820
+      ],
+      "id": "64ceb140-54c8-4b94-91a3-92db5883a0ef",
+      "name": "Create the market log"
     }
   ],
   "connections": {
@@ -307,11 +924,39 @@
       "main": [
         [
           {
-            "node": "Build the alert message",
+            "node": "Score the listing against the market",
             "type": "main",
             "index": 0
           }
         ]
+      ]
+    },
+    "Score the listing against the market": {
+      "main": [
+        [
+          {
+            "node": "Is it fairly priced?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Save the listing to the log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is it fairly priced?": {
+      "main": [
+        [
+          {
+            "node": "Build the alert message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     },
     "Build the alert message": {
@@ -319,6 +964,94 @@
         [
           {
             "node": "Send alert to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check prices every day": {
+      "main": [
+        [
+          {
+            "node": "Get current prices",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get the logged listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get current prices": {
+      "main": [
+        [
+          {
+            "node": "Match prices to the log by VIN",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the logged listings": {
+      "main": [
+        [
+          {
+            "node": "Match prices to the log by VIN",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Match prices to the log by VIN": {
+      "main": [
+        [
+          {
+            "node": "Has the price dropped?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has the price dropped?": {
+      "main": [
+        [
+          {
+            "node": "Describe the price drop",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Describe the price drop": {
+      "main": [
+        [
+          {
+            "node": "Build the alert message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update the price in the log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run once to set up": {
+      "main": [
+        [
+          {
+            "node": "Create the market log",
             "type": "main",
             "index": 0
           }
